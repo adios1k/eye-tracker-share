@@ -1,0 +1,20 @@
+{
+    "original_video": "Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25.mp4",
+    "augmentations": {
+        "bright_dark": "evaluations\\augmented_videos\\Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25_bright_dark.mp4",
+        "bright_light": "evaluations\\augmented_videos\\Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25_bright_light.mp4",
+        "low_contrast": "evaluations\\augmented_videos\\Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25_low_contrast.mp4",
+        "high_contrast": "evaluations\\augmented_videos\\Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25_high_contrast.mp4",
+        "noise_light": "evaluations\\augmented_videos\\Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25_noise_light.mp4",
+        "noise_heavy": "evaluations\\augmented_videos\\Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25_noise_heavy.mp4",
+        "blur_light": "evaluations\\augmented_videos\\Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25_blur_light.mp4",
+        "blur_heavy": "evaluations\\augmented_videos\\Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25_blur_heavy.mp4",
+        "low_saturation": "evaluations\\augmented_videos\\Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25_low_saturation.mp4",
+        "high_saturation": "evaluations\\augmented_videos\\Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25_high_saturation.mp4",
+        "compression_low": "evaluations\\augmented_videos\\Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25_compression_low.mp4",
+        "compression_medium": "evaluations\\augmented_videos\\Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25_compression_medium.mp4",
+        "scale_small": "evaluations\\augmented_videos\\Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25_scale_small.mp4",
+        "scale_large": "evaluations\\augmented_videos\\Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25_scale_large.mp4"
+    },
+    "total_generated": 14
+}
