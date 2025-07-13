@@ -63,4 +63,28 @@ coverage.xml
 pyrightconfig.json
 
 # Large video files (use external storage)
-evaluations/augmented_videos/*.mp4 
+evaluations/augmented_videos/*.mp4
+
+# Evaluation results and generated files
+evaluations/results/
+evaluations/evaluation_summary.md
+evaluations/threshold_check_results.json
+
+# Downloaded videos from Google Drive
+video_*.mp4
+videos/
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# IDE files
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini 
