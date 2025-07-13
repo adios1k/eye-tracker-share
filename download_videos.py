@@ -74,12 +74,15 @@ def download_from_drive():
         except Exception as e:
             print(f"❌ Error downloading {filename}: {e}")
     
-    # Move files to root directory for compatibility
+    # Move files to evaluations directory for compatibility
+    evaluations_dir = Path("evaluations")
+    evaluations_dir.mkdir(exist_ok=True)
+    
     for file_path in videos_dir.glob("*"):
-        target_path = Path(file_path.name)
+        target_path = evaluations_dir / file_path.name
         if not target_path.exists():
             file_path.rename(target_path)
-            print(f"📁 Moved {file_path.name} to root directory")
+            print(f"📁 Moved {file_path.name} to evaluations directory")
 
 if __name__ == "__main__":
     download_from_drive() 

@@ -242,6 +242,17 @@ class BlinkDetectionEvaluator:
         cwd = Path.cwd()
         print(f"Current working directory: {cwd}")
         
+        # Look for downloaded videos in current directory
+        print("Looking for downloaded videos in current directory...")
+        video_files = list(cwd.glob("video_*.mp4"))
+        print(f"Found {len(video_files)} downloaded video files")
+        
+        for video_file in video_files:
+            # For now, we'll use the videos without ground truth
+            # In a real scenario, you'd need corresponding JSON files
+            video_gt_pairs.append((str(video_file), ""))
+            print(f"✓ Found video: {video_file.name} (no ground truth)")
+        
         # Original video and ground truth (from root directory)
         original_video = cwd / "Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25.mp4"
         original_gt = cwd / "Labels_Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25.json"
@@ -518,17 +529,22 @@ def main() -> None:
     results = evaluator.run_evaluation()
     
     # Print summary
-    summary = results["summary_metrics"]
+    summary = results.get("summary_metrics", {})
     print("\n" + "="*50)
     print("EVALUATION SUMMARY")
     print("="*50)
-    print(f"Videos evaluated: {summary['videos_evaluated']}/{summary['total_videos']}")
-    print(f"Average Precision: {summary['average_precision']:.3f}")
-    print(f"Average Recall: {summary['average_recall']:.3f}")
-    print(f"Average F1-Score: {summary['average_f1_score']:.3f}")
-    print(f"Average Accuracy: {summary['average_accuracy']:.3f}")
-    print(f"Average Temporal Accuracy: {summary['average_temporal_accuracy']:.3f}")
-    print(f"Average Temporal Error: {summary['average_temporal_error']:.2f} frames")
+    
+    if summary:
+        print(f"Videos evaluated: {summary.get('videos_evaluated', 0)}/{summary.get('total_videos', 0)}")
+        print(f"Average Precision: {summary.get('average_precision', 0):.3f}")
+        print(f"Average Recall: {summary.get('average_recall', 0):.3f}")
+        print(f"Average F1-Score: {summary.get('average_f1_score', 0):.3f}")
+        print(f"Average Accuracy: {summary.get('average_accuracy', 0):.3f}")
+        print(f"Average Temporal Accuracy: {summary.get('average_temporal_accuracy', 0):.3f}")
+        print(f"Average Temporal Error: {summary.get('average_temporal_error', 0):.2f} frames")
+    else:
+        print("No videos were evaluated - no summary metrics available")
+    
     print("="*50)
 
 if __name__ == "__main__":
