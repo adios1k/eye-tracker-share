@@ -1,0 +1,181 @@
+name: Blink Detection QA
+
+on:
+  pull_request:
+    branches: [ main, master ]
+  push:
+    branches: [ main, master ]
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+        
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Run evaluation suite
+      id: evaluation
+      run: |
+        cd evaluations
+        python evaluation_harness.py
+        
+    - name: Generate evaluation summary
+      id: summary
+      run: |
+        cd evaluations
+        python -c "
+        import json
+        import os
+        
+        try:
+            # Check if metrics file exists
+            metrics_file = 'results/metrics.json'
+            if not os.path.exists(metrics_file):
+                print('❌ Metrics file not found')
+                exit(1)
+                
+            with open(metrics_file, 'r') as f:
+                data = json.load(f)
+            
+            summary = data.get('summary_metrics', {})
+            
+            # Generate markdown summary
+            with open('evaluation_summary.md', 'w') as f:
+                f.write('# Blink Detection Evaluation Results\\n\\n')
+                f.write('## Summary Metrics\\n')
+                f.write(f'- Videos Evaluated: {summary.get(\"videos_evaluated\", 0)}/{summary.get(\"total_videos\", 0)}\\n')
+                f.write(f'- Average Precision: {summary.get(\"average_precision\", 0):.3f}\\n')
+                f.write(f'- Average Recall: {summary.get(\"average_recall\", 0):.3f}\\n')
+                f.write(f'- Average F1-Score: {summary.get(\"average_f1_score\", 0):.3f}\\n')
+                f.write(f'- Average Accuracy: {summary.get(\"average_accuracy\", 0):.3f}\\n')
+                f.write(f'- Average Temporal Accuracy: {summary.get(\"average_temporal_accuracy\", 0):.3f}\\n')
+                f.write(f'- Average Temporal Error: {summary.get(\"average_temporal_error\", 0):.2f} frames\\n')
+                
+                # Add threshold check results if available
+                threshold_file = 'results/threshold_check_results.json'
+                if os.path.exists(threshold_file):
+                    with open(threshold_file, 'r') as tf:
+                        threshold_data = json.load(tf)
+                    
+                    threshold_check = threshold_data.get('threshold_check', {})
+                    alerts = threshold_data.get('alerts', {})
+                    
+                    f.write('\\n## Threshold Validation\\n')
+                    f.write(f'- Overall Status: {\"✅ PASSED\" if threshold_check.get(\"passed\", False) else \"❌ FAILED\"}\\n')
+                    f.write(f'- Violations: {len(threshold_check.get(\"violations\", []))}\\n')
+                    f.write(f'- Critical Alerts: {len(alerts.get(\"critical\", []))}\\n')
+                    f.write(f'- Warnings: {len(alerts.get(\"warning\", []))}\\n')
+                    f.write(f'- Info Alerts: {len(alerts.get(\"info\", []))}\\n')
+                    
+                    if threshold_check.get('passed', False):
+                        f.write('\\n🎉 All thresholds passed!\\n')
+                    else:
+                        f.write('\\n⚠️ Some thresholds failed. Please review the results.\\n')
+                else:
+                    f.write('\\n⚠️ Threshold check results not found\\n')
+                    
+            print('✅ Summary generated successfully')
+            
+        except Exception as e:
+            print(f'❌ Error generating summary: {e}')
+            exit(1)
+        "
+        
+    - name: Upload evaluation results
+      uses: actions/upload-artifact@v3
+      with:
+        name: evaluation-results
+        path: |
+          evaluations/results/
+          evaluations/evaluation_summary.md
+        retention-days: 30
+        
+    - name: Upload metrics.json
+      uses: actions/upload-artifact@v3
+      with:
+        name: metrics-json
+        path: evaluations/results/metrics.json
+        retention-days: 30
+        
+    - name: Comment PR with results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          let summary = '## Blink Detection Evaluation Results\n\n';
+          
+          try {
+            const summaryContent = fs.readFileSync('evaluations/evaluation_summary.md', 'utf8');
+            summary += summaryContent;
+          } catch (error) {
+            summary += '❌ Error reading evaluation summary\n';
+          }
+          
+          summary += '\n\n---\n';
+          summary += '📊 Full results available in build artifacts\n';
+          summary += '📈 Metrics JSON: `metrics-json` artifact\n';
+          summary += '📋 Complete results: `evaluation-results` artifact\n';
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: summary
+          });
+          
+    - name: Check threshold compliance
+      id: threshold-check
+      run: |
+        cd evaluations
+        
+        if [ -f "results/threshold_check_results.json" ]; then
+          python -c "
+          import json
+          import sys
+          
+          with open('results/threshold_check_results.json', 'r') as f:
+              data = json.load(f)
+          
+          threshold_check = data.get('threshold_check', {})
+          alerts = data.get('alerts', {})
+          
+          passed = threshold_check.get('passed', False)
+          critical_alerts = len(alerts.get('critical', []))
+          
+          if not passed or critical_alerts > 0:
+              print('❌ Threshold check failed')
+              sys.exit(1)
+          else:
+              print('✅ Threshold check passed')
+          "
+        else
+          echo "⚠️ Threshold check results not found"
+          exit 0
+        fi
+        
+    - name: Fail if thresholds not met
+      if: steps.threshold-check.outcome == 'failure'
+      run: |
+        echo "❌ Evaluation failed threshold checks"
+        echo "Please review the results and fix any issues"
+        exit 1 

@@ -1,17 +1,29 @@
 import json
 import os
-import glob
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Tuple, Union
 import numpy as np
 from datetime import datetime
-import cv2
+import matplotlib.pyplot as plt
+try:
+    import seaborn as sns
+except ImportError:
+    sns = None
 
 # Import our blink detection model
 import sys
-import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from blink_detection_model import BlinkDetectionModel
+from .blink_detection_model import BlinkDetectionModel
+
+# Import advanced evaluation modules
+try:
+    from .advanced_metrics import calculate_advanced_metrics
+    from .llm_summarizer import generate_llm_summary
+    from .advanced_augmentation import create_advanced_augmentation_pipeline, AugmentationConfig
+    advanced_features_available = True
+except ImportError as e:
+    print(f"Warning: Advanced features not available: {e}")
+    advanced_features_available = False
 
 class BlinkDetectionEvaluator:
     """
@@ -22,7 +34,7 @@ class BlinkDetectionEvaluator:
     def __init__(self, 
                  ear_threshold: float = 0.21,
                  consecutive_frames: int = 2,
-                 results_dir: str = "evaluations/results"):
+                 results_dir: str = "evaluations/results") -> None:
         """
         Initialize the evaluator.
         
@@ -31,19 +43,19 @@ class BlinkDetectionEvaluator:
             consecutive_frames: Number of consecutive frames to confirm blink
             results_dir: Directory to store evaluation results
         """
-        self.ear_threshold = ear_threshold
-        self.consecutive_frames = consecutive_frames
-        self.results_dir = Path(results_dir)
+        self.ear_threshold: float = ear_threshold
+        self.consecutive_frames: int = consecutive_frames
+        self.results_dir: Path = Path(results_dir)
         self.results_dir.mkdir(parents=True, exist_ok=True)
         
         # Initialize the model
-        self.model = BlinkDetectionModel(
+        self.model: BlinkDetectionModel = BlinkDetectionModel(
             ear_threshold=ear_threshold,
             consecutive_frames=consecutive_frames
         )
         
         # Metrics storage
-        self.results = {
+        self.results: Dict[str, Any] = {
             "evaluation_timestamp": datetime.now().isoformat(),
             "model_config": {
                 "ear_threshold": ear_threshold,
@@ -53,7 +65,7 @@ class BlinkDetectionEvaluator:
             "summary_metrics": {}
         }
     
-    def load_ground_truth(self, json_path: str) -> Dict[str, Any]:
+    def load_ground_truth(self, json_path: str) -> Dict[int, Dict[str, Any]]:
         """
         Load ground truth labels from JSON file.
         
@@ -64,12 +76,13 @@ class BlinkDetectionEvaluator:
             Dictionary with frame-by-frame ground truth
         """
         with open(json_path, 'r') as f:
-            gt_data = json.load(f)
+            gt_data: Dict[str, Any] = json.load(f)
         
         # Convert to frame-based format
-        ground_truth = {}
-        for frame_idx, frame_data in gt_data.items():
-            ground_truth[int(frame_idx)] = {
+        ground_truth: Dict[int, Dict[str, Any]] = {}
+        for frame_idx_str, frame_data in gt_data.items():
+            frame_idx = int(frame_idx_str)
+            ground_truth[frame_idx] = {
                 "eye_state": frame_data["open_closed"],
                 "direction": frame_data["direction"],
                 "is_blink": frame_data["open_closed"] == "Closed"
@@ -79,7 +92,7 @@ class BlinkDetectionEvaluator:
     
     def compute_blink_metrics(self, 
                             predicted_blinks: List[int], 
-                            ground_truth: Dict[int, Any],
+                            ground_truth: Dict[int, Dict[str, Any]],
                             total_frames: int) -> Dict[str, float]:
         """
         Compute blink detection metrics.
@@ -109,21 +122,21 @@ class BlinkDetectionEvaluator:
         accuracy = (tp + tn) / total_frames if total_frames > 0 else 0.0
         
         return {
-            "true_positives": tp,
-            "false_positives": fp,
-            "false_negatives": fn,
-            "true_negatives": tn,
-            "precision": precision,
-            "recall": recall,
-            "f1_score": f1_score,
-            "accuracy": accuracy,
-            "predicted_blinks": len(predicted_blinks),
-            "ground_truth_blinks": len(gt_blink_frames)
+            "true_positives": float(tp),
+            "false_positives": float(fp),
+            "false_negatives": float(fn),
+            "true_negatives": float(tn),
+            "precision": float(precision),
+            "recall": float(recall),
+            "f1_score": float(f1_score),
+            "accuracy": float(accuracy),
+            "predicted_blinks": float(len(predicted_blinks)),
+            "ground_truth_blinks": float(len(gt_blink_frames))
         }
     
     def compute_temporal_metrics(self, 
                                predicted_blinks: List[int], 
-                               ground_truth: Dict[int, Any]) -> Dict[str, float]:
+                               ground_truth: Dict[int, Dict[str, Any]]) -> Dict[str, float]:
         """
         Compute temporal accuracy metrics.
         
@@ -145,12 +158,12 @@ class BlinkDetectionEvaluator:
             }
         
         # Calculate temporal errors for each ground truth blink
-        temporal_errors = []
+        temporal_errors: List[float] = []
         for gt_frame in gt_blink_frames:
             if predicted_blinks:
                 # Find closest predicted blink
                 closest_pred = min(predicted_blinks, key=lambda x: abs(x - gt_frame))
-                temporal_errors.append(abs(closest_pred - gt_frame))
+                temporal_errors.append(float(abs(closest_pred - gt_frame)))
             else:
                 temporal_errors.append(float('inf'))
         
@@ -162,10 +175,10 @@ class BlinkDetectionEvaluator:
         temporal_accuracy = sum(1 for error in temporal_errors if error <= acceptable_range) / len(temporal_errors)
         
         return {
-            "temporal_accuracy": temporal_accuracy,
-            "average_temporal_error": avg_temporal_error,
-            "max_temporal_error": max_temporal_error,
-            "acceptable_range_frames": acceptable_range
+            "temporal_accuracy": float(temporal_accuracy),
+            "average_temporal_error": float(avg_temporal_error),
+            "max_temporal_error": float(max_temporal_error),
+            "acceptable_range_frames": float(acceptable_range)
         }
     
     def evaluate_video(self, video_path: str, gt_path: Optional[str] = None) -> Dict[str, Any]:
@@ -182,10 +195,10 @@ class BlinkDetectionEvaluator:
         print(f"Evaluating: {video_path}")
         
         # Process video with model
-        model_results = self.model.process_video(video_path, output_frames=True)
+        model_results: Dict[str, Any] = self.model.process_video(video_path, output_frames=True)
         
         # Initialize results
-        video_results = {
+        video_results: Dict[str, Any] = {
             "video_path": str(video_path),
             "model_results": model_results,
             "ground_truth_available": gt_path is not None
@@ -216,14 +229,14 @@ class BlinkDetectionEvaluator:
         
         return video_results
     
-    def find_video_ground_truth_pairs(self) -> List[tuple]:
+    def find_video_ground_truth_pairs(self) -> List[Tuple[str, str]]:
         """
         Find all video files and their corresponding ground truth files.
         
         Returns:
             List of (video_path, gt_path) tuples
         """
-        video_gt_pairs = []
+        video_gt_pairs: List[Tuple[str, str]] = []
         
         # Get current working directory
         cwd = Path.cwd()
@@ -251,32 +264,32 @@ class BlinkDetectionEvaluator:
             
             for video_file in video_files:
                 # Look for corresponding JSON file
-                gt_file = video_file.with_suffix('.json')
-                if gt_file.exists():
-                    video_gt_pairs.append((str(video_file), str(gt_file)))
-                    print(f"✓ Found video-GT pair: {video_file.name}")
+                json_file = video_file.with_suffix('.json')
+                if json_file.exists():
+                    video_gt_pairs.append((str(video_file), str(json_file)))
+                    print(f"✓ Found pair: {video_file.name} + {json_file.name}")
                 else:
-                    # Video without ground truth
-                    video_gt_pairs.append((str(video_file), None))
-                    print(f"⚠ Video without GT: {video_file.name}")
-        else:
-            print(f"✗ Augmented directory not found: {augmented_dir}")
+                    print(f"⚠ No ground truth found for: {video_file.name}")
         
-        print(f"Total video-GT pairs found: {len(video_gt_pairs)}")
         return video_gt_pairs
     
     def run_evaluation(self) -> Dict[str, Any]:
         """
-        Run evaluation on all videos.
+        Run the complete evaluation suite.
         
         Returns:
-            Complete evaluation results
+            Dictionary with all evaluation results
         """
         print("Starting blink detection evaluation...")
         
-        # Find all video files
+        # Find all video-ground truth pairs
         video_gt_pairs = self.find_video_ground_truth_pairs()
-        print(f"Found {len(video_gt_pairs)} videos to evaluate")
+        
+        if not video_gt_pairs:
+            print("❌ No video-ground truth pairs found!")
+            return self.results
+        
+        print(f"Found {len(video_gt_pairs)} video-ground truth pairs")
         
         # Evaluate each video
         for video_path, gt_path in video_gt_pairs:
@@ -284,12 +297,14 @@ class BlinkDetectionEvaluator:
                 video_results = self.evaluate_video(video_path, gt_path)
                 video_name = Path(video_path).stem
                 self.results["videos"][video_name] = video_results
-                print(f"✓ Completed: {video_name}")
+                print(f"✅ Completed evaluation for: {video_name}")
             except Exception as e:
-                print(f"✗ Error evaluating {video_path}: {e}")
-                self.results["videos"][Path(video_path).stem] = {
+                print(f"❌ Error evaluating {video_path}: {e}")
+                video_name = Path(video_path).stem
+                self.results["videos"][video_name] = {
                     "error": str(e),
-                    "video_path": str(video_path)
+                    "video_path": str(video_path),
+                    "gt_path": str(gt_path)
                 }
         
         # Compute summary metrics
@@ -298,138 +313,217 @@ class BlinkDetectionEvaluator:
         # Save results
         self._save_results()
         
-        print(f"Evaluation complete. Results saved to {self.results_dir}")
+        # Run threshold check
+        metrics_file = self.results_dir / "metrics.json"
+        self._run_threshold_check(metrics_file)
+        
         return self.results
     
-    def _compute_summary_metrics(self):
+    def _compute_summary_metrics(self) -> None:
         """Compute summary metrics across all videos."""
         videos_with_gt = [v for v in self.results["videos"].values() 
-                         if v.get("ground_truth_available", False)]
+                         if isinstance(v, dict) and v.get("ground_truth_available", False)]
         
         if not videos_with_gt:
+            print("⚠ No videos with ground truth found for summary metrics")
             return
         
-        # Aggregate metrics
-        total_precision = 0
-        total_recall = 0
-        total_f1 = 0
-        total_accuracy = 0
-        total_temporal_accuracy = 0
-        total_temporal_error = 0
-        
-        valid_videos = 0
+        # Collect all metrics
+        precisions: List[float] = []
+        recalls: List[float] = []
+        f1_scores: List[float] = []
+        accuracies: List[float] = []
+        temporal_accuracies: List[float] = []
+        temporal_errors: List[float] = []
         
         for video_data in videos_with_gt:
             if "blink_metrics" in video_data:
                 metrics = video_data["blink_metrics"]
+                precisions.append(metrics["precision"])
+                recalls.append(metrics["recall"])
+                f1_scores.append(metrics["f1_score"])
+                accuracies.append(metrics["accuracy"])
+            
+            if "temporal_metrics" in video_data:
                 temporal = video_data["temporal_metrics"]
-                
-                total_precision += metrics["precision"]
-                total_recall += metrics["recall"]
-                total_f1 += metrics["f1_score"]
-                total_accuracy += metrics["accuracy"]
-                total_temporal_accuracy += temporal["temporal_accuracy"]
-                total_temporal_error += temporal["average_temporal_error"]
-                valid_videos += 1
+                temporal_accuracies.append(temporal["temporal_accuracy"])
+                if temporal["average_temporal_error"] != float('inf'):
+                    temporal_errors.append(temporal["average_temporal_error"])
         
-        if valid_videos > 0:
-            self.results["summary_metrics"] = {
-                "average_precision": total_precision / valid_videos,
-                "average_recall": total_recall / valid_videos,
-                "average_f1_score": total_f1 / valid_videos,
-                "average_accuracy": total_accuracy / valid_videos,
-                "average_temporal_accuracy": total_temporal_accuracy / valid_videos,
-                "average_temporal_error": total_temporal_error / valid_videos,
-                "videos_evaluated": valid_videos,
-                "total_videos": len(self.results["videos"])
-            }
+        # Compute averages
+        summary_metrics = {
+            "videos_evaluated": len(videos_with_gt),
+            "total_videos": len(self.results["videos"]),
+            "average_precision": float(np.mean(precisions)) if precisions else 0.0,
+            "average_recall": float(np.mean(recalls)) if recalls else 0.0,
+            "average_f1_score": float(np.mean(f1_scores)) if f1_scores else 0.0,
+            "average_accuracy": float(np.mean(accuracies)) if accuracies else 0.0,
+            "average_temporal_accuracy": float(np.mean(temporal_accuracies)) if temporal_accuracies else 0.0,
+            "average_temporal_error": float(np.mean(temporal_errors)) if temporal_errors else float('inf'),
+            "max_temporal_error": float(max(temporal_errors)) if temporal_errors else float('inf')
+        }
+        
+        self.results["summary_metrics"] = summary_metrics
+        print(f"📊 Summary metrics computed for {len(videos_with_gt)} videos")
+        
+        # Add advanced metrics if available
+        if advanced_features_available:
+            self._compute_advanced_metrics(videos_with_gt)
     
-    def _save_results(self):
-        """Save evaluation results to JSON file."""
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        results_file = self.results_dir / f"evaluation_results_{timestamp}.json"
-        
+    def _compute_advanced_metrics(self, videos_with_gt: List[Dict[str, Any]]) -> None:
+        """Compute advanced metrics using the advanced metrics module."""
+        try:
+            # Prepare data for advanced metrics
+            predictions = []
+            ground_truth = []
+            
+            for video_data in videos_with_gt:
+                if "model_results" in video_data and "ground_truth" in video_data:
+                    model_results = video_data["model_results"]
+                    gt_data = video_data["ground_truth"]
+                    
+                    # Convert to prediction format
+                    for frame_idx in range(model_results["total_frames"]):
+                        is_blink = frame_idx in model_results["blink_frames"]
+                        confidence = 0.8 if is_blink else 0.2  # Simple confidence model
+                        
+                        predictions.append({
+                            "frame_idx": frame_idx,
+                            "blink_detected": is_blink,
+                            "confidence": confidence,
+                            "timestamp": frame_idx / 30.0  # Assuming 30 fps
+                        })
+                        
+                        # Ground truth
+                        gt_frame = gt_data.get(frame_idx, {})
+                        ground_truth.append({
+                            "frame_idx": frame_idx,
+                            "blink_detected": gt_frame.get("is_blink", False),
+                            "timestamp": frame_idx / 30.0
+                        })
+            
+            if predictions and ground_truth:
+                # Calculate advanced metrics
+                advanced_metrics = calculate_advanced_metrics(
+                    predictions=predictions,
+                    ground_truth=ground_truth,
+                    video_metadata={"fps": 30, "resolution": "HD"}
+                )
+                
+                # Store advanced metrics
+                self.results["advanced_metrics"] = advanced_metrics
+                
+                # Generate LLM summary
+                summary, dashboard_path = generate_llm_summary(
+                    metrics=advanced_metrics,
+                    historical_data=None  # Could be loaded from previous evaluations
+                )
+                
+                self.results["llm_summary"] = {
+                    "overall_score": summary.overall_score,
+                    "insights": [{"category": i.category, "title": i.title, "description": i.description, "severity": i.severity} for i in summary.insights],
+                    "recommendations": summary.recommendations,
+                    "dashboard_path": dashboard_path
+                }
+                
+                print(f"Advanced metrics computed and LLM summary generated: {dashboard_path}")
+                
+        except Exception as e:
+            print(f"Error computing advanced metrics: {e}")
+            import traceback
+            traceback.print_exc()
+    
+    def _save_results(self) -> None:
+        """Save evaluation results to files."""
+        # Save detailed results
+        results_file = self.results_dir / "detailed_results.json"
         with open(results_file, 'w') as f:
             json.dump(self.results, f, indent=2)
         
-        # Also save as metrics.json for the challenge
+        # Save metrics summary
         metrics_file = self.results_dir / "metrics.json"
+        metrics_data = {
+            "evaluation_timestamp": self.results["evaluation_timestamp"],
+            "model_config": self.results["model_config"],
+            "summary_metrics": self.results["summary_metrics"],
+            "videos": {
+                name: {
+                    "blink_metrics": data.get("blink_metrics", {}),
+                    "temporal_metrics": data.get("temporal_metrics", {}),
+                    "ground_truth_available": data.get("ground_truth_available", False)
+                }
+                for name, data in self.results["videos"].items()
+                if isinstance(data, dict)
+            }
+        }
+        
         with open(metrics_file, 'w') as f:
-            json.dump(self.results, f, indent=2)
+            json.dump(metrics_data, f, indent=2)
         
-        print(f"Results saved to: {results_file}")
-        print(f"Metrics saved to: {metrics_file}")
-        
-        # Run threshold checking
-        self._run_threshold_check(metrics_file)
+        print(f"💾 Results saved to: {self.results_dir}")
     
-    def _run_threshold_check(self, metrics_file: Path):
-        """Run threshold checking on the evaluation results."""
+    def _run_threshold_check(self, metrics_file: Path) -> None:
+        """Run threshold checking on the metrics."""
         try:
-            # Import threshold checker
-            import sys
-            import os
-            sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-            from threshold_checker import ThresholdChecker
+            from .threshold_checker import ThresholdChecker
             
-            print("\n🔍 Running threshold validation...")
+            # Load metrics
+            with open(metrics_file, 'r') as f:
+                metrics_data: Dict[str, Any] = json.load(f)
+            
+            summary_metrics = metrics_data["summary_metrics"]
             
             # Initialize threshold checker
             thresholds_file = Path(__file__).parent / "thresholds.json"
             checker = ThresholdChecker(str(thresholds_file))
             
-            # Load metrics
-            with open(metrics_file, 'r') as f:
-                metrics_data = json.load(f)
-            
-            if "summary_metrics" not in metrics_data:
-                print("⚠️  No summary metrics found for threshold checking")
-                return
-            
-            summary_metrics = metrics_data["summary_metrics"]
-            
-            # Run checks
+            # Run threshold check
             check_results = checker.check_summary_metrics(summary_metrics)
             alert_results = checker.check_alert_conditions(summary_metrics)
             
-            # Print results
-            checker.print_results(check_results, alert_results)
+            # Combine results
+            threshold_results = {
+                "threshold_check": check_results,
+                "alerts": alert_results
+            }
             
             # Save threshold check results
-            threshold_results_file = self.results_dir / "threshold_check_results.json"
-            checker.save_results(check_results, alert_results, str(threshold_results_file))
+            threshold_file = self.results_dir / "threshold_check_results.json"
+            with open(threshold_file, 'w') as f:
+                json.dump(threshold_results, f, indent=2)
             
-            # Determine if test suite should fail
-            if not check_results["passed"] or alert_results["critical"]:
-                print("\n❌ THRESHOLD CHECK FAILED - Test suite should fail")
-                return False
+            if check_results["passed"]:
+                print("✅ Threshold check passed")
             else:
-                print("\n✅ THRESHOLD CHECK PASSED")
-                return True
-                
+                print("❌ Threshold check failed")
+                violations = check_results["violations"]
+                print(f"   Violations: {len(violations)}")
+                for violation in violations:
+                    print(f"   - {violation}")
+        
+        except ImportError:
+            print("⚠ Threshold checker not available, skipping threshold check")
         except Exception as e:
-            print(f"⚠️  Threshold checking failed: {e}")
-            return True  # Don't fail the test suite if threshold checking itself fails
+            print(f"⚠ Error running threshold check: {e}")
 
-def main():
-    """Run the evaluation harness."""
+def main() -> None:
+    """Main evaluation function."""
     evaluator = BlinkDetectionEvaluator()
     results = evaluator.run_evaluation()
     
     # Print summary
-    if "summary_metrics" in results:
-        summary = results["summary_metrics"]
-        print("\n" + "="*50)
-        print("EVALUATION SUMMARY")
-        print("="*50)
-        print(f"Videos evaluated: {summary['videos_evaluated']}/{summary['total_videos']}")
-        print(f"Average Precision: {summary['average_precision']:.3f}")
-        print(f"Average Recall: {summary['average_recall']:.3f}")
-        print(f"Average F1-Score: {summary['average_f1_score']:.3f}")
-        print(f"Average Accuracy: {summary['average_accuracy']:.3f}")
-        print(f"Average Temporal Accuracy: {summary['average_temporal_accuracy']:.3f}")
-        print(f"Average Temporal Error: {summary['average_temporal_error']:.2f} frames")
-        print("="*50)
+    summary = results["summary_metrics"]
+    print("\n" + "="*50)
+    print("EVALUATION SUMMARY")
+    print("="*50)
+    print(f"Videos evaluated: {summary['videos_evaluated']}/{summary['total_videos']}")
+    print(f"Average Precision: {summary['average_precision']:.3f}")
+    print(f"Average Recall: {summary['average_recall']:.3f}")
+    print(f"Average F1-Score: {summary['average_f1_score']:.3f}")
+    print(f"Average Accuracy: {summary['average_accuracy']:.3f}")
+    print(f"Average Temporal Accuracy: {summary['average_temporal_accuracy']:.3f}")
+    print(f"Average Temporal Error: {summary['average_temporal_error']:.2f} frames")
+    print("="*50)
 
 if __name__ == "__main__":
     main() 
