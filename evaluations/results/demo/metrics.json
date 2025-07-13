@@ -1,5 +1,5 @@
 {
-  "evaluation_timestamp": "2025-07-13T20:08:40.092796",
+  "evaluation_timestamp": "2025-07-13T20:18:39.882111",
   "model_config": {
     "ear_threshold": 0.21,
     "consecutive_frames": 2
