@@ -1,0 +1,77 @@
+{
+  "threshold_check": {
+    "passed": true,
+    "violations": [],
+    "warnings": [],
+    "info_alerts": [],
+    "details": {
+      "average_precision": {
+        "passed": true,
+        "message": "\u2713 average_precision: 0.473",
+        "value": 0.4733641207098017,
+        "threshold": {
+          "minimum": 0.4,
+          "target": 0.6,
+          "description": "Minimum precision for blink detection"
+        }
+      },
+      "average_recall": {
+        "passed": true,
+        "message": "\u2713 average_recall: 0.893",
+        "value": 0.8932283464566929,
+        "threshold": {
+          "minimum": 0.8,
+          "target": 0.9,
+          "description": "Minimum recall for blink detection"
+        }
+      },
+      "average_f1_score": {
+        "passed": true,
+        "message": "\u2713 average_f1_score: 0.618",
+        "value": 0.6182502963707845,
+        "threshold": {
+          "minimum": 0.5,
+          "target": 0.7,
+          "description": "Minimum F1-score for blink detection"
+        }
+      },
+      "average_accuracy": {
+        "passed": true,
+        "message": "\u2713 average_accuracy: 0.716",
+        "value": 0.7163688058489033,
+        "threshold": {
+          "minimum": 0.6,
+          "target": 0.8,
+          "description": "Minimum accuracy for blink detection"
+        }
+      },
+      "average_temporal_error": {
+        "passed": true,
+        "message": "\u2713 average_temporal_error: 0.494",
+        "value": 0.4938582677165354,
+        "threshold": {
+          "maximum": 2.0,
+          "target": 1.0,
+          "description": "Maximum average temporal error in frames"
+        }
+      },
+      "videos_evaluated": {
+        "passed": true,
+        "message": "\u2713 videos_evaluated: 10.000",
+        "value": 10,
+        "threshold": {
+          "minimum": 8,
+          "target": 10,
+          "description": "Minimum number of videos that should be successfully evaluated"
+        }
+      }
+    }
+  },
+  "alerts": {
+    "critical": [],
+    "warning": [
+      "average_precision < 0.5"
+    ],
+    "info": []
+  }
+}

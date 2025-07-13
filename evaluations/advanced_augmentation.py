@@ -16,9 +16,13 @@ from pathlib import Path
 import json
 import time
 from scipy import ndimage
-from scipy.signal import gaussian
-import matplotlib.pyplot as plt
-import seaborn as sns
+
+
+def gaussian(M, std):
+    """Simple 1D Gaussian kernel (numpy fallback)."""
+    n = np.arange(0, M) - (M - 1.0) / 2.0
+    g = np.exp(-0.5 * (n / std) ** 2)
+    return g / g.sum()
 
 
 @dataclass

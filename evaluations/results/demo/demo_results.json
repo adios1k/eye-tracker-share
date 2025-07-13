@@ -1,0 +1,85 @@
+{
+  "timestamp": 1752417520.092797,
+  "features_demonstrated": [
+    "Basic Evaluation",
+    "LLM-Powered Summary",
+    "Advanced Data Augmentation",
+    "Visual Analytics"
+  ],
+  "metrics": {},
+  "insights": [
+    "The model shows suboptimal accuracy. Consider retraining with more diverse data.",
+    "High false positive rate detected. Model may be over-predicting blinks.",
+    "Low recall indicates missed blinks. Consider adjusting detection sensitivity.",
+    "F1 score indicates poor balance between precision and recall."
+  ],
+  "recommendations": [
+    "Consider data augmentation to improve model robustness",
+    "Implement confidence threshold tuning",
+    "Add more diverse training data",
+    "Consider ensemble methods for improved stability"
+  ],
+  "basic_evaluation": {
+    "status": "success",
+    "metrics": {
+      "videos_evaluated": 10,
+      "total_videos": 12,
+      "average_precision": 0.4733641207098017,
+      "average_recall": 0.8932283464566929,
+      "average_f1_score": 0.6182502963707845,
+      "average_accuracy": 0.7163688058489033,
+      "average_temporal_accuracy": 0.9858267716535432,
+      "average_temporal_error": 0.4938582677165354,
+      "max_temporal_error": 2.707086614173228
+    },
+    "videos_evaluated": 10
+  },
+  "advanced_metrics": {
+    "status": "error",
+    "error": "[WinError 6] The handle is invalid"
+  },
+  "llm_summary": {
+    "status": "success",
+    "overall_score": 0.0,
+    "insights_count": 4,
+    "recommendations_count": 4,
+    "dashboard_path": "evaluations\\results\\summaries\\summary_dashboard.png"
+  },
+  "augmentation_results": {
+    "status": "success",
+    "frames_augmented": 50,
+    "augmentations_applied": 50,
+    "quality_metrics": {
+      "psnr": {
+        "mean": 9.72692244932015,
+        "std": 1.6478450914515606,
+        "min": 4.787791211202112,
+        "max": 12.32802765864798
+      },
+      "ssim": {
+        "mean": 0.24183590748482178,
+        "std": 0.12887136637273466,
+        "min": -0.011521681972765267,
+        "max": 0.4763038489537668
+      },
+      "mean_absolute_difference": {
+        "mean": 69.72824887152778,
+        "std": 14.259190572202293,
+        "min": 51.465053168402775,
+        "max": 125.76552842881945
+      }
+    }
+  },
+  "performance_results": {
+    "status": "error",
+    "error": "The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()"
+  },
+  "threshold_results": {
+    "status": "error",
+    "error": "'alerts'"
+  },
+  "visualization_results": {
+    "status": "success",
+    "dashboard_path": "evaluations\\results\\demo\\comprehensive_dashboard.png"
+  }
+}

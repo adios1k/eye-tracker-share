@@ -29,11 +29,19 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Import our evaluation modules
-from evaluation_harness import BlinkDetectionEvaluator
-from advanced_metrics import calculate_advanced_metrics, MetricsVisualizer
-from llm_summarizer import generate_llm_summary, SummaryVisualizer
-from advanced_augmentation import create_advanced_augmentation_pipeline, AugmentationConfig
-from threshold_checker import ThresholdChecker
+try:
+    from .evaluation_harness import BlinkDetectionEvaluator
+    from .advanced_metrics import calculate_advanced_metrics, MetricsVisualizer
+    from .llm_summarizer import generate_llm_summary, SummaryVisualizer
+    from .advanced_augmentation import create_advanced_augmentation_pipeline, AugmentationConfig
+    from .threshold_checker import ThresholdChecker
+except ImportError:
+    # Fallback for direct execution
+    from evaluation_harness import BlinkDetectionEvaluator
+    from advanced_metrics import calculate_advanced_metrics, MetricsVisualizer
+    from llm_summarizer import generate_llm_summary, SummaryVisualizer
+    from advanced_augmentation import create_advanced_augmentation_pipeline, AugmentationConfig
+    from threshold_checker import ThresholdChecker
 
 
 class AdvancedCVEvaluationDemo:

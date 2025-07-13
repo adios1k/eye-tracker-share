@@ -1,0 +1,240 @@
+{
+  "evaluation_timestamp": "2025-07-13T20:08:40.092796",
+  "model_config": {
+    "ear_threshold": 0.21,
+    "consecutive_frames": 2
+  },
+  "summary_metrics": {
+    "videos_evaluated": 10,
+    "total_videos": 12,
+    "average_precision": 0.4733641207098017,
+    "average_recall": 0.8932283464566929,
+    "average_f1_score": 0.6182502963707845,
+    "average_accuracy": 0.7163688058489033,
+    "average_temporal_accuracy": 0.9858267716535432,
+    "average_temporal_error": 0.4938582677165354,
+    "max_temporal_error": 2.707086614173228
+  },
+  "videos": {
+    "Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25": {
+      "blink_metrics": {
+        "true_positives": 581.0,
+        "false_positives": 629.0,
+        "false_negatives": 54.0,
+        "true_negatives": 1198.0,
+        "precision": 0.48016528925619834,
+        "recall": 0.9149606299212598,
+        "f1_score": 0.6298102981029811,
+        "accuracy": 0.7225832656376929,
+        "predicted_blinks": 1210.0,
+        "ground_truth_blinks": 635.0
+      },
+      "temporal_metrics": {
+        "temporal_accuracy": 0.9937007874015747,
+        "average_temporal_error": 0.23622047244094488,
+        "max_temporal_error": 23.0,
+        "acceptable_range_frames": 5.0
+      },
+      "ground_truth_available": true
+    },
+    "Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25_blur_heavy": {
+      "blink_metrics": {
+        "true_positives": 591.0,
+        "false_positives": 667.0,
+        "false_negatives": 44.0,
+        "true_negatives": 1160.0,
+        "precision": 0.4697933227344992,
+        "recall": 0.9307086614173228,
+        "f1_score": 0.6244057052297939,
+        "accuracy": 0.7112103980503656,
+        "predicted_blinks": 1258.0,
+        "ground_truth_blinks": 635.0
+      },
+      "temporal_metrics": {
+        "temporal_accuracy": 0.9952755905511811,
+        "average_temporal_error": 0.2062992125984252,
+        "max_temporal_error": 23.0,
+        "acceptable_range_frames": 5.0
+      },
+      "ground_truth_available": true
+    },
+    "Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25_blur_light": {
+      "blink_metrics": {
+        "true_positives": 582.0,
+        "false_positives": 657.0,
+        "false_negatives": 53.0,
+        "true_negatives": 1170.0,
+        "precision": 0.46973365617433416,
+        "recall": 0.9165354330708662,
+        "f1_score": 0.6211312700106724,
+        "accuracy": 0.7116165718927701,
+        "predicted_blinks": 1239.0,
+        "ground_truth_blinks": 635.0
+      },
+      "temporal_metrics": {
+        "temporal_accuracy": 0.9952755905511811,
+        "average_temporal_error": 0.2251968503937008,
+        "max_temporal_error": 23.0,
+        "acceptable_range_frames": 5.0
+      },
+      "ground_truth_available": true
+    },
+    "Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25_bright_dark": {
+      "blink_metrics": {
+        "true_positives": 462.0,
+        "false_positives": 537.0,
+        "false_negatives": 173.0,
+        "true_negatives": 1290.0,
+        "precision": 0.4624624624624625,
+        "recall": 0.7275590551181103,
+        "f1_score": 0.565483476132191,
+        "accuracy": 0.7116165718927701,
+        "predicted_blinks": 999.0,
+        "ground_truth_blinks": 635.0
+      },
+      "temporal_metrics": {
+        "temporal_accuracy": 0.9102362204724409,
+        "average_temporal_error": 2.707086614173228,
+        "max_temporal_error": 74.0,
+        "acceptable_range_frames": 5.0
+      },
+      "ground_truth_available": true
+    },
+    "Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25_compression_low": {
+      "blink_metrics": {
+        "true_positives": 585.0,
+        "false_positives": 644.0,
+        "false_negatives": 50.0,
+        "true_negatives": 1183.0,
+        "precision": 0.4759967453213995,
+        "recall": 0.9212598425196851,
+        "f1_score": 0.6276824034334764,
+        "accuracy": 0.7181153533712429,
+        "predicted_blinks": 1229.0,
+        "ground_truth_blinks": 635.0
+      },
+      "temporal_metrics": {
+        "temporal_accuracy": 0.9952755905511811,
+        "average_temporal_error": 0.215748031496063,
+        "max_temporal_error": 23.0,
+        "acceptable_range_frames": 5.0
+      },
+      "ground_truth_available": true
+    },
+    "Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25_compression_medium": {
+      "blink_metrics": {
+        "true_positives": 579.0,
+        "false_positives": 642.0,
+        "false_negatives": 56.0,
+        "true_negatives": 1185.0,
+        "precision": 0.4742014742014742,
+        "recall": 0.9118110236220472,
+        "f1_score": 0.6239224137931033,
+        "accuracy": 0.7164906580016247,
+        "predicted_blinks": 1221.0,
+        "ground_truth_blinks": 635.0
+      },
+      "temporal_metrics": {
+        "temporal_accuracy": 0.9937007874015747,
+        "average_temporal_error": 0.2503937007874016,
+        "max_temporal_error": 23.0,
+        "acceptable_range_frames": 5.0
+      },
+      "ground_truth_available": true
+    },
+    "Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25_high_contrast": {
+      "blink_metrics": {
+        "true_positives": 600.0,
+        "false_positives": 650.0,
+        "false_negatives": 35.0,
+        "true_negatives": 1177.0,
+        "precision": 0.48,
+        "recall": 0.9448818897637795,
+        "f1_score": 0.636604774535809,
+        "accuracy": 0.7217709179528838,
+        "predicted_blinks": 1250.0,
+        "ground_truth_blinks": 635.0
+      },
+      "temporal_metrics": {
+        "temporal_accuracy": 0.9952755905511811,
+        "average_temporal_error": 0.19055118110236222,
+        "max_temporal_error": 23.0,
+        "acceptable_range_frames": 5.0
+      },
+      "ground_truth_available": true
+    },
+    "Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25_high_saturation": {
+      "blink_metrics": {
+        "true_positives": 577.0,
+        "false_positives": 647.0,
+        "false_negatives": 58.0,
+        "true_negatives": 1180.0,
+        "precision": 0.4714052287581699,
+        "recall": 0.9086614173228347,
+        "f1_score": 0.6207638515330824,
+        "accuracy": 0.7136474411047928,
+        "predicted_blinks": 1224.0,
+        "ground_truth_blinks": 635.0
+      },
+      "temporal_metrics": {
+        "temporal_accuracy": 0.9952755905511811,
+        "average_temporal_error": 0.22992125984251968,
+        "max_temporal_error": 23.0,
+        "acceptable_range_frames": 5.0
+      },
+      "ground_truth_available": true
+    },
+    "Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25_low_contrast": {
+      "blink_metrics": {
+        "true_positives": 538.0,
+        "false_positives": 609.0,
+        "false_negatives": 97.0,
+        "true_negatives": 1218.0,
+        "precision": 0.46904969485614645,
+        "recall": 0.8472440944881889,
+        "f1_score": 0.6038159371492704,
+        "accuracy": 0.7132412672623883,
+        "predicted_blinks": 1147.0,
+        "ground_truth_blinks": 635.0
+      },
+      "temporal_metrics": {
+        "temporal_accuracy": 0.988976377952756,
+        "average_temporal_error": 0.4456692913385827,
+        "max_temporal_error": 29.0,
+        "acceptable_range_frames": 5.0
+      },
+      "ground_truth_available": true
+    },
+    "Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25_low_saturation": {
+      "blink_metrics": {
+        "true_positives": 577.0,
+        "false_positives": 623.0,
+        "false_negatives": 58.0,
+        "true_negatives": 1204.0,
+        "precision": 0.48083333333333333,
+        "recall": 0.9086614173228347,
+        "f1_score": 0.628882833787466,
+        "accuracy": 0.723395613322502,
+        "predicted_blinks": 1200.0,
+        "ground_truth_blinks": 635.0
+      },
+      "temporal_metrics": {
+        "temporal_accuracy": 0.9952755905511811,
+        "average_temporal_error": 0.231496062992126,
+        "max_temporal_error": 23.0,
+        "acceptable_range_frames": 5.0
+      },
+      "ground_truth_available": true
+    },
+    "Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25_scale_large": {
+      "blink_metrics": {},
+      "temporal_metrics": {},
+      "ground_truth_available": false
+    },
+    "Mehul blink recording_ nightlight_specs and nospecs_ 02_03_25_scale_small": {
+      "blink_metrics": {},
+      "temporal_metrics": {},
+      "ground_truth_available": false
+    }
+  }
+}
