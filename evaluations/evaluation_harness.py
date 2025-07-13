@@ -13,13 +13,13 @@ except ImportError:
 # Import our blink detection model
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from .blink_detection_model import BlinkDetectionModel
+from blink_detection_model import BlinkDetectionModel
 
 # Import advanced evaluation modules
 try:
-    from .advanced_metrics import calculate_advanced_metrics
-    from .llm_summarizer import generate_llm_summary
-    from .advanced_augmentation import create_advanced_augmentation_pipeline, AugmentationConfig
+    from advanced_metrics import calculate_advanced_metrics
+    from llm_summarizer import generate_llm_summary
+    from advanced_augmentation import create_advanced_augmentation_pipeline, AugmentationConfig
     advanced_features_available = True
 except ImportError as e:
     print(f"Warning: Advanced features not available: {e}")
