@@ -150,32 +150,7 @@ jobs:
     - name: Check threshold compliance
       id: threshold-check
       run: |
-        cd evaluations
-        
-        if [ -f "results/threshold_check_results.json" ]; then
-          python -c "
-          import json
-          import sys
-          
-          with open('results/threshold_check_results.json', 'r') as f:
-              data = json.load(f)
-          
-          threshold_check = data.get('threshold_check', {})
-          alerts = data.get('alerts', {})
-          
-          passed = threshold_check.get('passed', False)
-          critical_alerts = len(alerts.get('critical', []))
-          
-          if not passed or critical_alerts > 0:
-              print('❌ Threshold check failed')
-              sys.exit(1)
-          else:
-              print('✅ Threshold check passed')
-          "
-        else
-          echo "⚠️ Threshold check results not found"
-          exit 0
-        fi
+        python check_thresholds.py
         
     - name: Fail if thresholds not met
       if: steps.threshold-check.outcome == 'failure'
