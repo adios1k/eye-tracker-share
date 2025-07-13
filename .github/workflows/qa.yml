@@ -32,6 +32,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         
+    - name: Download videos from Google Drive
+      run: |
+        python download_videos.py
+        
     - name: Run evaluation suite
       id: evaluation
       run: |

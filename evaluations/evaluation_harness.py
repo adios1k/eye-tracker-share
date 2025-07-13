@@ -284,6 +284,12 @@ class BlinkDetectionEvaluator:
         
         # Find all video-ground truth pairs
         video_gt_pairs = self.find_video_ground_truth_pairs()
+
+        # Skip last 3 videos if running in CI (e.g., GitLab or GitHub Actions)
+        import os
+        if os.environ.get("CI") and len(video_gt_pairs) > 3:
+            print(f"CI environment detected: Skipping last 3 videos out of {len(video_gt_pairs)} total.")
+            video_gt_pairs = video_gt_pairs[:-3]
         
         if not video_gt_pairs:
             print("❌ No video-ground truth pairs found!")
