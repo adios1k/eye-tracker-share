@@ -1,0 +1,92 @@
+{
+  "timestamp": "2025-07-13T18:22:46.552401",
+  "threshold_check": {
+    "passed": false,
+    "violations": [
+      "\u2717 average_precision: 0.473 < 0.9 (minimum)",
+      "\u2717 average_recall: 0.893 < 0.95 (minimum)",
+      "\u2717 average_f1_score: 0.618 < 0.9 (minimum)",
+      "\u2717 average_accuracy: 0.716 < 0.9 (minimum)",
+      "\u2717 average_temporal_error: 0.494 > 0.1 (maximum)",
+      "\u2717 videos_evaluated: 10.000 < 12 (minimum)"
+    ],
+    "warnings": [],
+    "info_alerts": [],
+    "details": {
+      "average_precision": {
+        "passed": false,
+        "message": "\u2717 average_precision: 0.473 < 0.9 (minimum)",
+        "value": 0.4733641207098017,
+        "threshold": {
+          "minimum": 0.9,
+          "description": "Demo fail: precision"
+        }
+      },
+      "average_recall": {
+        "passed": false,
+        "message": "\u2717 average_recall: 0.893 < 0.95 (minimum)",
+        "value": 0.8932283464566929,
+        "threshold": {
+          "minimum": 0.95,
+          "description": "Demo fail: recall"
+        }
+      },
+      "average_f1_score": {
+        "passed": false,
+        "message": "\u2717 average_f1_score: 0.618 < 0.9 (minimum)",
+        "value": 0.6182502963707845,
+        "threshold": {
+          "minimum": 0.9,
+          "description": "Demo fail: f1"
+        }
+      },
+      "average_accuracy": {
+        "passed": false,
+        "message": "\u2717 average_accuracy: 0.716 < 0.9 (minimum)",
+        "value": 0.7163688058489033,
+        "threshold": {
+          "minimum": 0.9,
+          "description": "Demo fail: accuracy"
+        }
+      },
+      "average_temporal_error": {
+        "passed": false,
+        "message": "\u2717 average_temporal_error: 0.494 > 0.1 (maximum)",
+        "value": 0.4938582677165354,
+        "threshold": {
+          "maximum": 0.1,
+          "description": "Demo fail: temporal error"
+        }
+      },
+      "videos_evaluated": {
+        "passed": false,
+        "message": "\u2717 videos_evaluated: 10.000 < 12 (minimum)",
+        "value": 10,
+        "threshold": {
+          "minimum": 12,
+          "description": "Demo fail: videos evaluated"
+        }
+      }
+    }
+  },
+  "alerts": {
+    "critical": [
+      "average_precision < 0.9",
+      "average_recall < 0.95",
+      "average_f1_score < 0.9",
+      "average_accuracy < 0.9",
+      "average_temporal_error > 0.1",
+      "videos_evaluated < 12"
+    ],
+    "warning": [
+      "average_precision < 0.8",
+      "average_recall < 0.9",
+      "average_f1_score < 0.8",
+      "average_accuracy < 0.8"
+    ],
+    "info": [
+      "average_temporal_error > 0.2"
+    ]
+  },
+  "overall_status": "FAILED"
+}

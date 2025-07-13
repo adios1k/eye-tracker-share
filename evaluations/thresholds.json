@@ -1,0 +1,55 @@
+{
+  "thresholds": {
+    "blink_detection": {
+      "average_precision": {"minimum": 0.4, "target": 0.6, "description": "Minimum precision for blink detection"},
+      "average_recall": {"minimum": 0.8, "target": 0.9, "description": "Minimum recall for blink detection"},
+      "average_f1_score": {"minimum": 0.5, "target": 0.7, "description": "Minimum F1-score for blink detection"},
+      "average_accuracy": {"minimum": 0.6, "target": 0.8, "description": "Minimum accuracy for blink detection"}
+    },
+    "temporal_accuracy": {
+      "average_temporal_error": {"maximum": 2.0, "target": 1.0, "description": "Maximum average temporal error in frames"}
+    },
+    "model_performance": {
+      "videos_evaluated": {"minimum": 8, "target": 10, "description": "Minimum number of videos that should be successfully evaluated"}
+    }
+  },
+  "alerts": {
+    "critical": {
+      "description": "Critical failures that should stop the pipeline",
+      "conditions": [
+        "average_precision < 0.4",
+        "average_recall < 0.8",
+        "average_f1_score < 0.5",
+        "average_accuracy < 0.6",
+        "average_temporal_error > 2.0",
+        "videos_evaluated < 8"
+      ]
+    },
+    "warning": {
+      "description": "Warnings that indicate potential issues",
+      "conditions": [
+        "average_precision < 0.5",
+        "average_recall < 0.85",
+        "average_f1_score < 0.6",
+        "average_accuracy < 0.7"
+      ]
+    },
+    "info": {
+      "description": "Informational alerts for monitoring",
+      "conditions": [
+        "average_temporal_error > 1.5"
+      ]
+    }
+  },
+  "metadata": {
+    "version": "1.0",
+    "created": "2025-07-13",
+    "description": "Acceptance thresholds for blink detection evaluation metrics",
+    "notes": [
+      "Thresholds are based on initial evaluation results",
+      "Target values represent ideal performance",
+      "Minimum values represent acceptable performance",
+      "Maximum values represent upper limits for errors"
+    ]
+  }
+} 

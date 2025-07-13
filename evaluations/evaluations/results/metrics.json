@@ -1,0 +1,9 @@
+{
+  "evaluation_timestamp": "2025-07-13T17:59:52.766727",
+  "model_config": {
+    "ear_threshold": 0.21,
+    "consecutive_frames": 2
+  },
+  "videos": {},
+  "summary_metrics": {}
+}

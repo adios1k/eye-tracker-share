@@ -1,0 +1,37 @@
+{
+  "timestamp": "2025-07-13T18:16:36.459598",
+  "threshold_check": {
+    "passed": true,
+    "violations": [],
+    "warnings": [],
+    "info_alerts": [],
+    "details": {
+      "average_temporal_error": {
+        "passed": true,
+        "message": "\u2713 average_temporal_error: 0.494",
+        "value": 0.4938582677165354,
+        "threshold": {
+          "maximum": 2.0,
+          "target": 1.0,
+          "description": "Maximum average temporal error in frames"
+        }
+      },
+      "videos_evaluated": {
+        "passed": true,
+        "message": "\u2713 videos_evaluated: 10.000",
+        "value": 10,
+        "threshold": {
+          "minimum": 8,
+          "target": 10,
+          "description": "Minimum number of videos that should be successfully evaluated"
+        }
+      }
+    }
+  },
+  "alerts": {
+    "critical": [],
+    "warning": [],
+    "info": []
+  },
+  "overall_status": "PASSED"
+}
